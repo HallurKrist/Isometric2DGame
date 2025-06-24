@@ -29,7 +29,6 @@ public class PlayerMovement : MonoBehaviour
     public void OnMove(InputValue value)
     {
         moveDirection = RotateVector(value.Get<Vector2>(), -45);
-        Debug.Log(moveDirection);
     }
 
     public Vector2 RotateVector(Vector2 vec, float angle)
