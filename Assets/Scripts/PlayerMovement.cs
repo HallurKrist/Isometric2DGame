@@ -43,4 +43,14 @@ public class PlayerMovement : MonoBehaviour
 
         return new Vector2(newX, newY);
     }
+
+    public void SetSpeed(float _speed)
+    {
+        speed = _speed;
+    }
+
+    public float GetSpeed()
+    {
+        return speed;
+    }
 }
