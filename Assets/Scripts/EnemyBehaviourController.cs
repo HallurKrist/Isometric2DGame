@@ -72,7 +72,7 @@ public class EnemyBehaviourController : MonoBehaviour
         }
         else if (currState == EnemyState.ATTACK)
         {
-            Attack();
+            return;
         }
         else
         {
@@ -119,9 +119,10 @@ public class EnemyBehaviourController : MonoBehaviour
         }*/
     }
 
-    private void Attack()
+    private void Attack(GameObject go)
     {
         Debug.Log("Enemy Attack!");
+        go.GetComponent<HealthController>().TakeDamage();
         SetAttackDelay();
     }
 
@@ -160,6 +161,7 @@ public class EnemyBehaviourController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        Attack(col.gameObject);
         esc.Attack();
     }
 }
