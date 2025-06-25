@@ -85,7 +85,7 @@ public class EnemyBehaviourController : MonoBehaviour
         if (esc.GetState() != EnemyState.IDLE)
         {
             //Patrol
-            Debug.Log("Partoling");
+            //Debug.Log("Partoling");
             
             if (target == null) target = waypoints[index];
 
@@ -107,7 +107,7 @@ public class EnemyBehaviourController : MonoBehaviour
     {
         //Chase behaviour 
 
-        Debug.Log("Chasing");
+        //Debug.Log("Chasing");
 
         Vector3 normalizedDir = Vector3.Normalize(GetDistanceToPlayer());
         moveDir = normalizedDir;
@@ -121,7 +121,7 @@ public class EnemyBehaviourController : MonoBehaviour
 
     private void Attack(GameObject go)
     {
-        Debug.Log("Enemy Attack!");
+        //Debug.Log("Enemy Attack!");
         go.GetComponent<HealthController>().TakeDamage();
         SetAttackDelay();
     }
