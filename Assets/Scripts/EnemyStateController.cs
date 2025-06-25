@@ -6,7 +6,8 @@ public enum EnemyState
     IDLE,
     PATROL,
     CHASE,
-    ATTACK
+    ATTACK,
+    SPECIAL_ATTACK
 }
 
 public class EnemyStateController : MonoBehaviour
@@ -50,6 +51,14 @@ public class EnemyStateController : MonoBehaviour
         animator.SetBool("IsAttacking", true);
     }
 
+    public void SpecialAttack()
+    {
+        state = EnemyState.SPECIAL_ATTACK;
+
+        DisableAllAnimatorBools();
+        animator.SetBool("IsSpecialAttacking", true);
+    }
+
     // Randomly choose from idle and patrol when player is out of range
     public void OutOfRange()
     {
@@ -78,5 +87,6 @@ public class EnemyStateController : MonoBehaviour
         animator.SetBool("IsPatroling", false);
         animator.SetBool("IsChasing", false);
         animator.SetBool("IsAttacking", false);
+        animator.SetBool("IsSpecialAttacking", false);
     }
 }

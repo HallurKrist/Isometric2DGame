@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class EnemyBehaviourController : MonoBehaviour
 {
@@ -22,13 +23,16 @@ public class EnemyBehaviourController : MonoBehaviour
 
     private Vector2 moveDir = Vector2.zero;
 
+    [SerializeField] private GameObject bulletPool;
+    [SerializeField] private float bulletSpeed = 5.0f;
+    [SerializeField] private float bulletDuration = 5.0f;
+    private int specialAttackIteration = 0;
     private bool isAttackDelayActive = false;
     private float ActiveAttackDelay = 2.0f;
+    private float ActiveSpecialAttackDelay = 10.0f;
     [SerializeField] private float AttackDelay = 2.0f;
+    [SerializeField] private float SpecialAttackDelay = 10.0f;
 
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -56,6 +60,7 @@ public class EnemyBehaviourController : MonoBehaviour
             if (GetDistanceToPlayer().magnitude <= chaseDistance)
             {
                 esc.ChasePlayer();
+                StartSpecialAttackCountDown();
                 Chase();
             }
 
@@ -63,6 +68,14 @@ public class EnemyBehaviourController : MonoBehaviour
         }
         else if (currState == EnemyState.CHASE)
         {
+            ActiveSpecialAttackDelay -= Time.deltaTime;
+            if (ActiveSpecialAttackDelay < 0.0f)
+            {
+                esc.SpecialAttack();
+                SpecialAttack();
+                return;
+            }
+
             if (GetDistanceToPlayer().magnitude > chaseDistance)
             {
                 esc.OutOfRange();
@@ -70,7 +83,7 @@ public class EnemyBehaviourController : MonoBehaviour
             }
             Chase();
         }
-        else if (currState == EnemyState.ATTACK)
+        else if (currState == EnemyState.ATTACK || currState == EnemyState.SPECIAL_ATTACK)
         {
             return;
         }
@@ -84,9 +97,6 @@ public class EnemyBehaviourController : MonoBehaviour
     {
         if (esc.GetState() != EnemyState.IDLE)
         {
-            //Patrol
-            //Debug.Log("Partoling");
-            
             if (target == null) target = waypoints[index];
 
             Vector3 normalizedDir = Vector3.Normalize(GetDistanceToTarget());
@@ -105,25 +115,28 @@ public class EnemyBehaviourController : MonoBehaviour
 
     private void Chase()
     {
-        //Chase behaviour 
-
-        //Debug.Log("Chasing");
-
         Vector3 normalizedDir = Vector3.Normalize(GetDistanceToPlayer());
         moveDir = normalizedDir;
         MoveEnemy();
-
-        /*if (GetDistanceToPlayer().magnitude < attackDistance)
-        {
-            esc.Attack();
-        }*/
     }
 
     private void Attack(GameObject go)
     {
-        //Debug.Log("Enemy Attack!");
         go.GetComponent<HealthController>().TakeDamage();
         SetAttackDelay();
+    }
+
+    private void SpecialAttack()
+    {
+        //Shoot Bullets
+        specialAttackIteration = 0;
+        StartCoroutine(BulletHell());
+        Debug.Log("Shooting Bullets");
+    }
+
+    private void StartSpecialAttackCountDown()
+    {
+        ActiveSpecialAttackDelay = SpecialAttackDelay;
     }
 
     private void MoveEnemy()
@@ -157,6 +170,60 @@ public class EnemyBehaviourController : MonoBehaviour
     public Vector3 GetDistanceToTarget()
     {
         return target.transform.position - transform.position;
+    }
+
+    private IEnumerator BulletHell()
+    {
+
+        while (true)
+        {
+            GameObject bul1 = bulletPool.transform.GetChild(0 + specialAttackIteration * 5).gameObject;
+            bul1.SetActive(true);
+            bul1.GetComponent<BulletDamage>().ShootBullet(transform.position, GetRandomDirection(), bulletSpeed, bulletDuration);
+            GameObject bul2 = bulletPool.transform.GetChild(1 + specialAttackIteration * 5).gameObject;
+            bul2.SetActive(true);
+            bul2.GetComponent<BulletDamage>().ShootBullet(transform.position, GetRandomDirection(), bulletSpeed, bulletDuration);
+            GameObject bul3 = bulletPool.transform.GetChild(2 + specialAttackIteration * 5).gameObject;
+            bul3.SetActive(true);
+            bul3.GetComponent<BulletDamage>().ShootBullet(transform.position, GetRandomDirection(), bulletSpeed, bulletDuration);
+            GameObject bul4 = bulletPool.transform.GetChild(3 + specialAttackIteration * 5).gameObject;
+            bul4.SetActive(true);
+            bul4.GetComponent<BulletDamage>().ShootBullet(transform.position, GetRandomDirection(), bulletSpeed, bulletDuration);
+            GameObject bul5 = bulletPool.transform.GetChild(4 + specialAttackIteration * 5).gameObject;
+            bul5.SetActive(true);
+            bul5.GetComponent<BulletDamage>().ShootBullet(transform.position, GetRandomDirection(), bulletSpeed, bulletDuration);
+
+            if (specialAttackIteration >= 4)
+            {
+                StartSpecialAttackCountDown();
+                esc.ChasePlayer();
+                yield break;
+            }
+
+            specialAttackIteration++;
+
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        
+    }
+
+    private Vector2 GetRandomDirection()
+    {
+        Vector2 dir = Vector2.up; //vector with a lenght of one
+        return RotateVector(dir, Random.Range(0.0f, 360.0f));
+    }
+
+    private Vector2 RotateVector(Vector2 vec, float angle)
+    {
+        float rad = angle * Mathf.Deg2Rad;
+        float cos = Mathf.Cos(rad);
+        float sin = Mathf.Sin(rad);
+
+        float newX = vec.x * cos - vec.y * sin;
+        float newY = vec.x * sin + vec.y * cos;
+
+        return new Vector2(newX, newY);
     }
 
     void OnCollisionEnter2D(Collision2D col)
