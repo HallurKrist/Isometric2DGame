@@ -12,7 +12,6 @@ public class HealthController : MonoBehaviour
     [SerializeField] private RectTransform fourthHealth;
 
     private int health = 4;
-
     private void Start()
     {
         health = 4;

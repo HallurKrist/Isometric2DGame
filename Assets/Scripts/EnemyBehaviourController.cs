@@ -5,33 +5,29 @@ using System.Collections;
 
 public class EnemyBehaviourController : MonoBehaviour
 {
+    private Rigidbody2D rb; 
+
     [SerializeField] private EnemyStateController esc;
-
     [SerializeField] private GameObject player;
-
     [SerializeField] float chaseDistance = 10.0f;
     [SerializeField] float attackDistance = 0.5f;
-
     [SerializeField] private GameObject[] waypoints;
-    private int index = 0;
-
     [SerializeField] private float speed = 5.0f;
 
+    private int index = 0;
     private GameObject target = null;
-
-    private Rigidbody2D rb;
-
     private Vector2 moveDir = Vector2.zero;
 
     [SerializeField] private GameObject bulletPool;
     [SerializeField] private float bulletSpeed = 5.0f;
     [SerializeField] private float bulletDuration = 5.0f;
+    [SerializeField] private float AttackDelay = 2.0f;
+    [SerializeField] private float SpecialAttackDelay = 10.0f;
+
     private int specialAttackIteration = 0;
     private bool isAttackDelayActive = false;
     private float ActiveAttackDelay = 2.0f;
     private float ActiveSpecialAttackDelay = 10.0f;
-    [SerializeField] private float AttackDelay = 2.0f;
-    [SerializeField] private float SpecialAttackDelay = 10.0f;
 
     void Start()
     {
@@ -41,7 +37,6 @@ public class EnemyBehaviourController : MonoBehaviour
     void FixedUpdate()
     {
         ResetVelocity();
-
         if (isAttackDelayActive)
         {
             ActiveAttackDelay -= Time.deltaTime;
@@ -54,7 +49,6 @@ public class EnemyBehaviourController : MonoBehaviour
         }
 
         EnemyState currState = esc.GetState();
-
         if ((currState == EnemyState.IDLE) || (currState == EnemyState.PATROL))
         {
             if (GetDistanceToPlayer().magnitude <= chaseDistance)
@@ -63,7 +57,6 @@ public class EnemyBehaviourController : MonoBehaviour
                 StartSpecialAttackCountDown();
                 Chase();
             }
-
             IdleOrPatrol();
         }
         else if (currState == EnemyState.CHASE)
@@ -98,12 +91,9 @@ public class EnemyBehaviourController : MonoBehaviour
         if (esc.GetState() != EnemyState.IDLE)
         {
             if (target == null) target = waypoints[index];
-
             Vector3 normalizedDir = Vector3.Normalize(GetDistanceToTarget());
             moveDir = normalizedDir;
             MoveEnemy();
-
-            Debug.Log(moveDir);
 
             // If its within a certain distance we expect it to be at the waypoint and therefore has to go to the next
             if (GetDistanceToTarget().magnitude < 0.1f)
@@ -128,10 +118,8 @@ public class EnemyBehaviourController : MonoBehaviour
 
     private void SpecialAttack()
     {
-        //Shoot Bullets
         specialAttackIteration = 0;
         StartCoroutine(BulletHell());
-        Debug.Log("Shooting Bullets");
     }
 
     private void StartSpecialAttackCountDown()
@@ -174,7 +162,6 @@ public class EnemyBehaviourController : MonoBehaviour
 
     private IEnumerator BulletHell()
     {
-
         while (true)
         {
             GameObject bul1 = bulletPool.transform.GetChild(0 + specialAttackIteration * 5).gameObject;
@@ -199,9 +186,7 @@ public class EnemyBehaviourController : MonoBehaviour
                 esc.ChasePlayer();
                 yield break;
             }
-
             specialAttackIteration++;
-
             yield return new WaitForSeconds(0.2f);
         }
 

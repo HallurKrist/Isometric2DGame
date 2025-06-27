@@ -13,19 +13,14 @@ public enum EnemyState
 public class EnemyStateController : MonoBehaviour
 {
     private EnemyState state = EnemyState.IDLE;
-
-    private SpriteRenderer sr;
     private Animator animator;
 
     [SerializeField] private EnemyBehaviourController ebc;
-
     [SerializeField] private List<Color> stateColors;
 
     private void Start()
     {
-        sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        //sr.color = stateColors[0];
     }
 
     public EnemyState GetState()
@@ -36,8 +31,6 @@ public class EnemyStateController : MonoBehaviour
     public void ChasePlayer()
     {
         state = EnemyState.CHASE;
-        //sr.color = stateColors[2];
-
         DisableAllAnimatorBools();
         animator.SetBool("IsChasing", true);
     }
@@ -45,8 +38,6 @@ public class EnemyStateController : MonoBehaviour
     public void Attack()
     {
         state = EnemyState.ATTACK;
-        //sr.color = stateColors[3];
-
         DisableAllAnimatorBools();
         animator.SetBool("IsAttacking", true);
     }
@@ -54,7 +45,6 @@ public class EnemyStateController : MonoBehaviour
     public void SpecialAttack()
     {
         state = EnemyState.SPECIAL_ATTACK;
-
         DisableAllAnimatorBools();
         animator.SetBool("IsSpecialAttacking", true);
     }
@@ -68,15 +58,11 @@ public class EnemyStateController : MonoBehaviour
         if (randint == 0)
         {
             state = EnemyState.IDLE;
-            //sr.color = stateColors[0];
-
             animator.SetBool("IsIdle", true);
         }
         else
         {
             state = EnemyState.PATROL;
-            //sr.color = stateColors[1];
-
             animator.SetBool("IsPatroling", true);
         }
     }

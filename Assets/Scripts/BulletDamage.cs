@@ -40,5 +40,4 @@ public class BulletDamage : MonoBehaviour
         direction = flightDirection;
         speed = bulletSpeed;
     }
-
 }
